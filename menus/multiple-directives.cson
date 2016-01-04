@@ -1,0 +1,22 @@
+# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle multiple-directives'
+      'command': 'multiple-directives:toggle'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'multiple-directives'
+      'submenu': [
+        {
+          'label': 'Toggle'
+          'command': 'multiple-directives:toggle'
+        }
+      ]
+    ]
+  }
+]
