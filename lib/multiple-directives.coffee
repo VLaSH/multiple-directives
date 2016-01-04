@@ -1,5 +1,5 @@
 MultipleDirectivesView = require './multiple-directives-view'
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, Range, Point} = require 'atom'
 
 module.exports = MultipleDirectives =
   multipleDirectivesView: null
@@ -25,21 +25,82 @@ module.exports = MultipleDirectives =
     multipleDirectivesViewState: @multipleDirectivesView.serialize()
 
   toggle: ->
+    @editor =  atom.workspace.getActiveTextEditor()
+    object = @parseRawText(@editor)
 
   # parse text from editor to a hash of objects
-  parseRawText: (rawText) ->
+  parseRawText: (editor) ->
+    declarationPartial = @getDeclarationPartial(editor)
+    dependencies = @getDependencies(editor, declarationPartial)
+    parametres = @getParametres(editor, declarationPartial)
+    pparams = @parseParametres(parametres)
+
+    { depend: dependencies, params: pparams }
 
   # get declaration part of angular module
-  getDeclarationPartial: (rawText) ->
+  getDeclarationPartial: (editor) ->
+    startPoint = new Point()
+    endPoint = new Point()
+    editor.scan(new RegExp('angular'), (object) ->
+      startPoint = object.range.start
+    )
+    editor.scan(new RegExp('->'), (object) ->
+      endPoint = object.range.start
+    )
+    partialRange = new Range(startPoint, endPoint)
+    partialText = editor.getTextInBufferRange(partialRange)
+
+    { text: partialText, range: partialRange }
 
   # parse included dependencies to objects
-  getDependencies: (decPartial) ->
+  getDependencies: (editor, decPartial) ->
+    startPoint = new Point()
+    endPoint = new Point()
+    editor.scanInBufferRange(/\[/, decPartial.range, (object) ->
+      startPoint = object.range.end
+    )
+    editor.scanInBufferRange(/\(/, decPartial.range, (object) ->
+      endPoint = object.range.start
+    )
+    partialRange = new Range(startPoint, endPoint)
+    partialText = editor.getTextInBufferRange(partialRange)
+
+    { text: partialText, range: partialRange }
 
   # parse method params to objects
-  getParametres: (decPartial) ->
+  getParametres: (editor, decPartial) ->
+    startPoint = new Point()
+    endPoint = new Point()
+    editor.scanInBufferRange(/\(/, decPartial.range, (object) ->
+      startPoint = object.range.end
+    )
+    editor.scanInBufferRange(/\)/, decPartial.range, (object) ->
+      endPoint = object.range.start
+    )
+    partialRange = new Range(startPoint, endPoint)
+    partialText = editor.getTextInBufferRange(partialRange)
+
+    { text: partialText, range: partialRange }
+
+  parseParametres: (params) ->
+    rawArray = params.text.split(',')
+    parametres = []
+    row = 0
+    rawArray.forEach((item, i, array) ->
+      parametres[i] = {}
+      if i == 0
+        parametres[i].start = params.range.start.column
+      else
+        parametres[i].start = parametres[i - 1].end + 1
+
+      parametres[i].end = parametres[i].start + item.length
+      parametres[i].item = item.replace(/\s/g, '')
+      # console.log(item.replace(/\n/g, '-').match(/-/g).length if item.replace(/\n/g, '-').match(/-/g))
+    )
+    parametres
 
   # find objects that repeat several times
-  searchForClones: (objects) ->
+  searchForClones: (editor, objects) ->
 
   # remove objects that repeat several times
-  removeClones: (clones) ->
+  removeClones: (editor, clones) ->
