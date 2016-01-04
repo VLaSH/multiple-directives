@@ -25,9 +25,21 @@ module.exports = MultipleDirectives =
     multipleDirectivesViewState: @multipleDirectivesView.serialize()
 
   toggle: ->
-    console.log 'MultipleDirectives was toggled!'
 
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
-    else
-      @modalPanel.show()
+  # parse text from editor to a hash of objects
+  parseRawText: (rawText) ->
+
+  # get declaration part of angular module
+  getDeclarationPartial: (rawText) ->
+
+  # parse included dependencies to objects
+  getDependencies: (decPartial) ->
+
+  # parse method params to objects
+  getParametres: (decPartial) ->
+
+  # find objects that repeat several times
+  searchForClones: (objects) ->
+
+  # remove objects that repeat several times
+  removeClones: (clones) ->
