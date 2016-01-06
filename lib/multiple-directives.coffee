@@ -10,7 +10,8 @@ module.exports = MultipleDirectives =
 
   activate: (state) ->
     _this = this
-    console.log('welcome')
+    @select = false
+    @clones = []
     @multipleDirectivesView = new MultipleDirectivesView(state.multipleDirectivesViewState)
     @modalPanel = atom.workspace.addModalPanel(item: @multipleDirectivesView.getElement(), visible: false)
 
@@ -23,6 +24,8 @@ module.exports = MultipleDirectives =
     atom.workspace.observeTextEditors (editor) ->
       _this.subscriptions.add editor.onDidSave ->
         _this.toggle()
+      _this.subscriptions.add editor.onDidStopChanging ->
+        _this.select = false
 
   deactivate: ->
     @modalPanel.destroy()
@@ -33,19 +36,30 @@ module.exports = MultipleDirectives =
     multipleDirectivesViewState: @multipleDirectivesView.serialize()
 
   toggle: ->
+    editor = atom.workspace.getActiveTextEditor()
+    return unless editor.getText().match(new RegExp('angular'))
     parser = new TextParser()
-    object = parser.parseRawText()
-    @searchForClones(object.params)
+    @clones = parser.parseRawText() unless @select
+    @disarmClones(@clones)
+
+  disarmClones: (clones) ->
+    highlightMethod = if @select then 'remove' else 'highlight'
+    armyOfClones = clones.params.concat(clones.depend)
+    @multipleDirectivesView.highlightArmyOfClones(
+      @searchForClones(armyOfClones), highlightMethod
+    )
+    @select = !@select
 
   # find objects that repeat several times
   searchForClones: (processedItems) ->
-    _this = this
+    clones = []
     processedItems.forEach((object, i, array) ->
       count = 1
       _i = i + 1
       while(_i < array.length)
         if object.item == array[_i].item
           count++
-          _this.multipleDirectivesView.highlightClones(array[_i])
+          clones.push(array[_i])
         _i++
     )
+    clones
