@@ -1,10 +1,9 @@
 {
   "name": "multiple-directives",
   "main": "./lib/multiple-directives",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Managing angularJS dependencies.",
-  "keywords": [
-  ],
+  "keywords": [],
   "activationCommands": {
     "atom-workspace": "multiple-directives:toggle"
   },
@@ -13,6 +12,5 @@
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
