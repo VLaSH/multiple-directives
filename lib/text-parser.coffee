@@ -18,7 +18,7 @@ class TextParser
     editor = @editor || atom.workspace.getActiveTextEditor()
     startPoint = new Point()
     endPoint = new Point()
-    editor.scan(new RegExp('angular'), (object) ->
+    editor.scan(new RegExp('\\['), (object) ->
       startPoint = object.range.start
     )
     editor.scan(new RegExp('->'), (object) ->

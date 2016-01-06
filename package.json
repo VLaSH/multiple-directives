@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "description": "Managing angularJS dependencies.",
   "keywords": [],
-  "activationCommands": {
-    "atom-workspace": "multiple-directives:toggle"
-  },
   "repository": "https://github.com/vlad-shevtsov-main/multiple-directives",
   "license": "MIT",
   "engines": {
