@@ -37,7 +37,7 @@ module.exports = MultipleDirectives =
 
   toggle: ->
     editor = atom.workspace.getActiveTextEditor()
-    return unless editor.getText().match(new RegExp('angular'))
+    return unless editor.getText().match(new RegExp('\\['))
     parser = new TextParser()
     @clones = parser.parseRawText() unless @select
     @disarmClones(@clones)
