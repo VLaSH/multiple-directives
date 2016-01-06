@@ -1,4 +1,4 @@
-{CompositeDisposable, Range} = require 'atom'
+{CompositeDisposable, Range, Point} = require 'atom'
 
 module.exports =
 class MultipleDirectivesView
@@ -17,7 +17,17 @@ class MultipleDirectivesView
   getElement: ->
     @element
 
-  # highlight objects that repeat several times
-  highlightClones: (object) ->
+  # highlight clones that repeat several times
+  highlightArmyOfClones: (clones, highlightMethod) ->
     editor = atom.workspace.getActiveTextEditor()
-    editor.addSelectionForBufferRange(new Range(object.itemStartPos, object.end))
+    ranges = []
+    for clone in clones
+      if highlightMethod == 'highlight'
+        startPoint = clone.itemStartPos
+        endPoint = clone.end
+      else
+        startPoint = clone.start
+        endPoint = new Point(clone.end.row, clone.end.column + 1)
+      ranges.push(new Range(startPoint, endPoint))
+
+    editor.setSelectedBufferRanges(ranges) if ranges.length > 0
