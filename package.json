@@ -1,7 +1,7 @@
 {
   "name": "multiple-directives",
   "main": "./lib/multiple-directives",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Managing angularJS dependencies.(only for coffeescript now!)",
   "keywords": [],
   "repository": "https://github.com/vlad-shevtsov-main/multiple-directives",
